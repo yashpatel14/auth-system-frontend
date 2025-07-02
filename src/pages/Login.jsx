@@ -9,10 +9,10 @@ const Login = () => {
   return (
     <div className="shadow-input mx-auto mt-[100px] w-full max-w-md rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black">
       <h2 className="text-4xl text-center font-bold text-neutral-800 dark:text-neutral-200">
-      Welcome back
+        Welcome back
       </h2>
       <p className="mt-2 text-center max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-      Sign in to your account to continue
+        Sign in to your account to continue
       </p>
       <form className="my-8">
         <LabelInputContainer className="mb-4">
@@ -68,23 +68,27 @@ const Login = () => {
         <div className="flex flex-col gap-2 mt-5">
           <div className="text-center text-sm">
             <span className="text-black">Already have an account? </span>
-            
-                <Link className="hover:underline text-black-200 font-medium"
+
+            <Link
+              className="hover:underline text-black-200 font-medium"
               to="/register"
-              data-discover="true">
+              data-discover="true"
+            >
               Sign up
-              </Link>
-            
+            </Link>
           </div>
           <div className="text-center text-sm">
-            <span className="text-black-300/60">Need to verify your email? </span>
-            <a
+            <span className="text-black-300/60">
+              Need to verify your email?{" "}
+            </span>
+
+            <Link
               className="hover:underline text-black-200 font-medium"
-              href="/resend-verification"
+              to="/resend-verification"
               data-discover="true"
             >
               Resend verification
-            </a>
+            </Link>
           </div>
         </div>
       </form>
