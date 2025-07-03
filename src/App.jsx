@@ -7,6 +7,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
 import Dashboard from "./pages/Dashboard"
 import AdminDashboard from "./pages/AdminDashboard"
+import NotFound from "./pages/NotFound"
 
 
 function App() {
@@ -27,6 +28,8 @@ function App() {
 
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )
