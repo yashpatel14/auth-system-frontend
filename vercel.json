@@ -4,8 +4,12 @@
         "source": "/(.*)",
         "headers": [
           {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
+            "key": "Cross-Origin-Opener-Policy",
+            "value": ""
+          },
+          {
+            "key": "Cross-Origin-Embedder-Policy",
+            "value": ""
           }
         ]
       }
