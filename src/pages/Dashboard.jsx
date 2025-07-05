@@ -19,6 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "react-toastify";
+import { logoutAll, userLogout } from "../store/Slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const invoices = [
   {
@@ -66,6 +70,9 @@ const invoices = [
 ];
 
 const Dashboard = () => {
+  
+
+
   const links = [
     {
       label: "Dashboard",
@@ -151,6 +158,31 @@ export const LogoIcon = () => {
 
 // Dummy dashboard component with content
 const Content = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      const response = await dispatch(userLogout());
+      toast.success(response.message || "Logged out successfully.");
+      navigate("/login");
+    } catch (error) {
+      toast.error(
+        error || "Error while logging out. Please try again."
+      );
+    }
+  };
+
+  const logoutAllSession = async()=>{
+    try {
+      const response = await dispatch(logoutAll());
+      toast.success(response.message || "Logged out All Sessions successfully.");
+    } catch (error) {
+      toast.error(
+        error || "Error while logging out. Please try again."
+      );
+    }
+  }
   return (
     <div className="flex flex-1">
       <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
@@ -163,12 +195,14 @@ const Content = () => {
             <button
               className="h-10 px-4 rounded-md bg-gradient-to-br from-black to-neutral-600 text-white font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
               type="button"
+              onClick={() => logout()}
             >
               Logout →
             </button>
             <button
               className="h-10 px-4 rounded-md bg-gradient-to-br from-black to-neutral-600 text-white font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
               type="button"
+              onClick={() => logoutAllSession()}
             >
               Logout All Sessions →
             </button>

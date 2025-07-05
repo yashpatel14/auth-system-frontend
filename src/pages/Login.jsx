@@ -1,11 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { fetchUser, googleLogin, userLogin } from "../store/Slices/authSlice";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
+
+  const {register,handleSubmit,formState:{errors}} = useForm();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const onSubmit = async(data) => {
+    try {
+      const response = await dispatch(userLogin(data)).unwrap(); 
+    const user = await dispatch(fetchUser()).unwrap();
+      // dispatch(
+      //   setCredentials({
+      //     user: user.data,
+      //   })
+      // );
+
+      console.log(response)
+
+      toast.success("Login successful");
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error)
+      toast.error(error || "Login failed.");
+    }
+  };
   return (
     <div className="shadow-input mx-auto mt-[100px] w-full max-w-md rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black">
       <h2 className="text-4xl text-center font-bold text-neutral-800 dark:text-neutral-200">
@@ -14,21 +44,42 @@ const Login = () => {
       <p className="mt-2 text-center max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
         Sign in to your account to continue
       </p>
-      <form className="my-8">
+      <form className="my-8" onSubmit={handleSubmit(onSubmit)}>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
+          <Input id="email" {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email address",
+                    },
+                  })} placeholder="projectmayhem@fc.com" type="email" />
+                  {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input id="password" {...register("password", {
+                    required: "Password is required",
+                    minLength: { value: 6, message: "Min 6 characters" },
+                  })} placeholder="••••••••" type="password" />
+                  {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
         </LabelInputContainer>
 
         <div className="flex justify-between mb-3">
           <div className="order-first flex items-center gap-2">
             <input
               type="checkbox"
-              id="rememberme"
+              id="rememberMe"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) =>
+                    setRememberMe(checked)
+                  }
               className="w-4 h-4 accent-black"
             />
             <label htmlFor="rememberme" className="text-sm">
@@ -54,16 +105,33 @@ const Login = () => {
         <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
         <div className="flex flex-col space-y-4">
-          <button
-            className="group/btn shadow-input relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_#262626]"
-            type="submit"
-          >
-            <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">
-              Google
-            </span>
-            <BottomGradient />
-          </button>
+        <GoogleLogin
+              theme="outline"
+              text="continue_with"
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const idToken = credentialResponse.credential;
+                  await googleLogin({
+                    token: idToken,
+                    rememberMe,
+                  }).unwrap();
+
+                  const user = await dispatch(fetchUser()).unwrap();
+
+                  // dispatch(
+                  //   setCredentials({
+                  //     user: user.data,
+                  //   })
+                  // );
+
+                  toast.success("Login successful.");
+                  navigate("/dashboard");
+                } catch (error) {
+                  toast.error(error);
+                }
+              }}
+              onError={() => toast.error("Login Failed.")}
+            />
         </div>
         <div className="flex flex-col gap-2 mt-5">
           <div className="text-center text-sm">
